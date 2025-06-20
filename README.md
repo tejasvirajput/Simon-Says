@@ -1,1 +1,2 @@
-Simon Says Game :- Mind power enhancing game. 
+# Simon Says Game
+  Mind power enhancing game. 
