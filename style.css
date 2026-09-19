@@ -1,41 +1,541 @@
-body {
-    text-align: center;
-    background-color: lightblue;
+/* =========================================================
+   SIMON SAYS PRO
+   Custom CSS
+   Tailwind handles the main UI.
+========================================================= */
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* =========================================================
+   DIFFICULTY BUTTON
+========================================================= */
+
+.difficulty-btn.active {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.95),
+    rgba(168, 85, 247, 0.95)
+  );
+
+  color: white;
+
+  border-color: rgba(196, 181, 253, 0.2);
+
+  box-shadow:
+    0 8px 25px rgba(124, 58, 237, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.difficulty-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* =========================================================
+   SIMON BUTTONS
+========================================================= */
 
 .btn {
-    height: 200px;
-    width: 200px;
-    border-radius: 20%;
-    border: 10px solid black;
-    margin: 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  -webkit-tap-highlight-color: transparent;
+
+  user-select: none;
 }
 
-.btn-container {
-    display: flex;
-    justify-content: center;
+.btn::after {
+  content: "";
+
+  position: absolute;
+  inset: -5px;
+
+  border-radius: inherit;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
-.yellow {
-    background-color: #f99b45;
+/* =========================================================
+   BUTTON GLOW
+========================================================= */
+
+.red::after {
+  box-shadow:
+    0 0 25px #ef4444,
+    0 0 60px rgba(239, 68, 68, 0.65);
 }
 
-.red {
-    background-color: #d95988;
+.yellow::after {
+  box-shadow:
+    0 0 25px #facc15,
+    0 0 60px rgba(250, 204, 21, 0.65);
 }
 
-.green {
-    background-color: #63aac0;
+.green::after {
+  box-shadow:
+    0 0 25px #10b981,
+    0 0 60px rgba(16, 185, 129, 0.65);
 }
 
-.purple {
-    background-color: #819ff9;
+.blue::after {
+  box-shadow:
+    0 0 25px #3b82f6,
+    0 0 60px rgba(59, 130, 246, 0.65);
 }
+
+/* =========================================================
+   PREMIUM SIMON FLASH
+   Used by app.js
+========================================================= */
 
 .flash {
-    background-color: white;
+  transform: scale(1.08) !important;
+
+  filter: brightness(1.9) saturate(1.2) !important;
+
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.9),
+    0 0 45px rgba(255, 255, 255, 0.8),
+    0 0 90px rgba(255, 255, 255, 0.35),
+    inset 0 3px 12px rgba(255, 255, 255, 0.55) !important;
+
+  z-index: 10;
 }
 
+.flash::after {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   USER FLASH
+========================================================= */
+
 .userflash {
-    background-color: green;
+  transform: scale(0.93) !important;
+
+  filter: brightness(1.35) saturate(1.1) !important;
+
+  transition:
+    transform 0.08s ease,
+    filter 0.08s ease;
+}
+
+/* =========================================================
+   DISABLED GAME BUTTONS
+========================================================= */
+
+.btn.disabled {
+  cursor: not-allowed;
+
+  filter: saturate(0.75);
+
+  opacity: 0.7;
+}
+
+.btn:disabled {
+  pointer-events: none;
+}
+
+/* =========================================================
+   CONTROL BUTTON STATES
+========================================================= */
+
+.start-btn:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.55;
+
+  transform: none !important;
+
+  box-shadow: none;
+}
+
+/* =========================================================
+   PAUSE STATE
+========================================================= */
+
+.game-card.paused::after {
+  content: "GAME PAUSED";
+
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: inherit;
+
+  background: radial-gradient(
+    circle at center,
+    rgba(124, 58, 237, 0.14),
+    rgba(0, 0, 0, 0.78)
+  );
+
+  backdrop-filter: blur(8px);
+
+  color: white;
+
+  font-size: 1rem;
+
+  font-weight: 800;
+
+  letter-spacing: 4px;
+
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+
+  pointer-events: none;
+
+  z-index: 20;
+}
+
+/* Keep pause button clickable */
+
+.game-card.paused .pause-btn {
+  position: relative;
+
+  z-index: 30;
+
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+
+  color: white;
+
+  border-color: rgba(74, 222, 128, 0.3);
+
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.35);
+}
+
+/* =========================================================
+   GAME OVER ANIMATION
+========================================================= */
+
+.game-over {
+  animation: gameOverShake 0.45s ease;
+}
+
+@keyframes gameOverShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-8px);
+  }
+
+  40% {
+    transform: translateX(8px);
+  }
+
+  60% {
+    transform: translateX(-6px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* =========================================================
+   ACHIEVEMENTS
+========================================================= */
+
+.achievement.locked {
+  opacity: 0.35;
+
+  filter: grayscale(1);
+}
+
+.achievement.unlocked {
+  opacity: 1;
+
+  filter: grayscale(0);
+
+  border-color: rgba(251, 191, 36, 0.35);
+
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.08),
+    rgba(255, 255, 255, 0.035)
+  );
+
+  box-shadow:
+    0 0 30px rgba(251, 191, 36, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+  .game-card {
+    border-radius: 24px;
+  }
+
+  .btn {
+    width: 112px !important;
+    height: 112px !important;
+  }
+
+  .controls {
+    gap: 8px;
+  }
+
+  .control-btn {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* =========================================================
+   VERY SMALL DEVICES
+========================================================= */
+
+@media (max-width: 340px) {
+  .btn {
+    width: 94px !important;
+    height: 94px !important;
+  }
+}
+
+/* =========================================================
+   DYNAMIC BACKGROUND
+========================================================= */
+
+.dynamic-background {
+  isolation: isolate;
+}
+
+/* =========================================================
+   MOVING GRID
+========================================================= */
+
+.background-grid {
+  opacity: 0.055;
+
+  background-image:
+    linear-gradient(rgba(168, 85, 247, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.35) 1px, transparent 1px);
+
+  background-size: 70px 70px;
+
+  transform: perspective(500px) rotateX(58deg) scale(1.5);
+
+  transform-origin: center bottom;
+
+  animation: backgroundGridMove 18s linear infinite;
+}
+
+@keyframes backgroundGridMove {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 70px;
+  }
+}
+
+/* =========================================================
+   GLOW ORBS
+========================================================= */
+
+.background-orb {
+  will-change: transform;
+}
+
+/* Purple orb */
+
+.background-orb-purple {
+  animation: purpleOrbMove 16s ease-in-out infinite alternate;
+}
+
+@keyframes purpleOrbMove {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  35% {
+    transform: translate3d(150px, 70px, 0) scale(1.12);
+  }
+
+  70% {
+    transform: translate3d(220px, 190px, 0) scale(0.95);
+  }
+
+  100% {
+    transform: translate3d(80px, 260px, 0) scale(1.08);
+  }
+}
+
+/* Blue orb */
+
+.background-orb-blue {
+  animation: blueOrbMove 19s ease-in-out infinite alternate;
+}
+
+@keyframes blueOrbMove {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  35% {
+    transform: translate3d(-130px, 80px, 0) scale(1.1);
+  }
+
+  70% {
+    transform: translate3d(-210px, 200px, 0) scale(0.94);
+  }
+
+  100% {
+    transform: translate3d(-80px, 280px, 0) scale(1.06);
+  }
+}
+
+/* Fuchsia orb */
+
+.background-orb-fuchsia {
+  animation: fuchsiaOrbMove 22s ease-in-out infinite alternate;
+}
+
+@keyframes fuchsiaOrbMove {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  40% {
+    transform: translate3d(-120px, -100px, 0) scale(1.12);
+  }
+
+  75% {
+    transform: translate3d(150px, -170px, 0) scale(0.92);
+  }
+
+  100% {
+    transform: translate3d(80px, -50px, 0) scale(1.08);
+  }
+}
+
+/* =========================================================
+   SMALL FLOATING LIGHTS
+========================================================= */
+
+.background-light {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.background-light-one {
+  animation: ambientLightOne 7s ease-in-out infinite;
+}
+
+.background-light-two {
+  animation: ambientLightTwo 9s ease-in-out 1.5s infinite;
+}
+
+.background-light-three {
+  animation: ambientLightThree 11s ease-in-out 3s infinite;
+}
+
+@keyframes ambientLightOne {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.7);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: translate(80px, -60px) scale(1.4);
+  }
+}
+
+@keyframes ambientLightTwo {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.7);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: translate(-70px, 80px) scale(1.3);
+  }
+}
+
+@keyframes ambientLightThree {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.7);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: translate(100px, -50px) scale(1.5);
+  }
+}
+
+/* =========================================================
+   MOBILE OPTIMIZATION
+========================================================= */
+
+@media (max-width: 640px) {
+  .background-grid {
+    background-size: 55px 55px;
+
+    transform: perspective(400px) rotateX(58deg) scale(1.4);
+  }
+
+  .background-orb-purple {
+    animation-duration: 20s;
+  }
+
+  .background-orb-blue {
+    animation-duration: 23s;
+  }
+
+  .background-orb-fuchsia {
+    animation-duration: 26s;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .background-grid,
+  .background-orb,
+  .background-light {
+    animation: none !important;
+  }
 }

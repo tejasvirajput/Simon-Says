@@ -1,26 +1,637 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simon Says Game</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <h1>Simon Says Game</h1>
-    <h2>Press any key to start the game</h2>
 
-    <div class="btn-container">
-      <div class="line-one">
-        <div class="btn red" type="button" id="red"></div>
-        <div class="btn yellow" type="button" id="yellow"></div>
-      </div>
-      <div class="line-two">
-        <div class="btn green" type="button" id="green"></div>
-        <div class="btn purple" type="button" id="purple"></div> 
-      </div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Simon Says Game - Test your memory, follow the pattern, and beat your highest score."
+    />
+
+    <title>Simon Says Game | Memory Challenge</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ["Poppins", "sans-serif"],
+              inter: ["Inter", "sans-serif"],
+            },
+
+            boxShadow: {
+              glow: "0 0 40px rgba(139, 92, 246, 0.18)",
+              "glow-purple": "0 0 35px rgba(168, 85, 247, 0.35)",
+            },
+
+            animation: {
+              "pulse-slow": "pulseSlow 4s ease-in-out infinite",
+              float: "float 8s ease-in-out infinite",
+              "float-delayed": "float 8s ease-in-out 2s infinite",
+              "float-delayed-2": "float 8s ease-in-out 4s infinite",
+            },
+
+            keyframes: {
+              pulseSlow: {
+                "0%, 100%": {
+                  opacity: "0.4",
+                },
+                "50%": {
+                  opacity: "0.7",
+                },
+              },
+
+              float: {
+                "0%, 100%": {
+                  transform: "translate(0, 0)",
+                },
+                "50%": {
+                  transform: "translate(40px, -30px)",
+                },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body
+    class="min-h-screen overflow-x-hidden bg-[#070711] font-poppins text-white"
+  >
+    <!-- =========================================================
+     DYNAMIC BACKGROUND
+    ========================================================= -->
+
+    <div
+      class="dynamic-background pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+    >
+      <!-- Base gradient -->
+      <div class="absolute inset-0 bg-[#070711]"></div>
+
+      <!-- Ambient color wash -->
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(124,58,237,0.16),transparent_32%),radial-gradient(circle_at_85%_25%,rgba(59,130,246,0.12),transparent_30%),radial-gradient(circle_at_50%_90%,rgba(168,85,247,0.12),transparent_35%)]"
+      ></div>
+
+      <!-- =====================================================
+       MOVING GLOW ORBS
+      ====================================================== -->
+
+      <!-- Purple -->
+      <div
+        class="background-orb background-orb-purple absolute -left-40 top-[5%] h-[420px] w-[420px] rounded-full bg-violet-600/20 blur-[120px]"
+      ></div>
+
+      <!-- Blue -->
+      <div
+        class="background-orb background-orb-blue absolute -right-40 top-[25%] h-[460px] w-[460px] rounded-full bg-blue-500/15 blur-[130px]"
+      ></div>
+
+      <!-- Fuchsia -->
+      <div
+        class="background-orb background-orb-fuchsia absolute bottom-[-180px] left-[35%] h-[500px] w-[500px] rounded-full bg-fuchsia-500/10 blur-[140px]"
+      ></div>
+
+      <!-- =====================================================
+       MOVING GRID
+      ====================================================== -->
+
+      <div class="background-grid absolute inset-[-20%]"></div>
+
+      <!-- =====================================================
+       SMALL AMBIENT LIGHTS
+      ====================================================== -->
+
+      <div
+        class="background-light background-light-one absolute left-[25%] top-[30%] h-2 w-2 rounded-full bg-violet-400/40 blur-[2px]"
+      ></div>
+
+      <div
+        class="background-light background-light-two absolute right-[28%] top-[55%] h-1.5 w-1.5 rounded-full bg-cyan-400/40 blur-[2px]"
+      ></div>
+
+      <div
+        class="background-light background-light-three absolute bottom-[25%] left-[15%] h-2 w-2 rounded-full bg-fuchsia-400/30 blur-[2px]"
+      ></div>
+
+      <!-- =====================================================
+       VIGNETTE
+      ====================================================== -->
+
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(3,3,10,0.62)_100%)]"
+      ></div>
     </div>
 
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="mx-auto w-[92%] max-w-6xl px-0 py-8 sm:py-10 lg:py-14">
+      <!-- =======================================================
+           HEADER
+      ======================================================== -->
+
+      <header class="mb-8 text-center sm:mb-10">
+        <!-- Logo -->
+        <div class="mb-3 flex items-center justify-center gap-3">
+          <div
+            class="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-400/20 bg-violet-500/10 text-xl shadow-[0_0_25px_rgba(139,92,246,0.25)] backdrop-blur-xl"
+          >
+            ⚡
+          </div>
+
+          <h1
+            class="text-4xl font-black tracking-[-1.5px] sm:text-5xl lg:text-6xl"
+          >
+            Simon
+            <span
+              class="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent"
+            >
+              Says Game
+            </span>
+          </h1>
+        </div>
+
+        <p class="text-sm text-zinc-300 sm:text-base">
+          Test your memory.
+          <span class="text-zinc-300"
+            >Follow the pattern. Beat your score.</span
+          >
+        </p>
+
+        <!-- Small status badge -->
+        <div class="mt-4 flex justify-center">
+          <div
+            class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs text-zinc-400 backdrop-blur-xl"
+          >
+            <span
+              class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse"
+            ></span>
+
+            Memory Challenge
+          </div>
+        </div>
+      </header>
+
+      <!-- =======================================================
+           DIFFICULTY
+      ======================================================== -->
+
+      <section class="mb-6 text-center">
+        <div class="mb-3">
+          <p
+            class="text-[10px] font-bold uppercase tracking-[3px] text-zinc-500"
+          >
+            Select Difficulty
+          </p>
+        </div>
+
+        <div
+          class="mx-auto flex w-fit flex-wrap justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] p-1.5 backdrop-blur-xl"
+        >
+          <button
+            class="difficulty-btn active rounded-xl border border-transparent px-4 py-2.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:bg-white/[0.06] sm:px-6"
+            data-mode="easy"
+          >
+            🟢 Easy
+          </button>
+
+          <button
+            class="difficulty-btn rounded-xl border border-transparent px-4 py-2.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:bg-white/[0.06] sm:px-6"
+            data-mode="medium"
+          >
+            🟡 Medium
+          </button>
+
+          <button
+            class="difficulty-btn rounded-xl border border-transparent px-4 py-2.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:bg-white/[0.06] sm:px-6"
+            data-mode="hard"
+          >
+            🔴 Hard
+          </button>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           SCORE BOARD
+      ======================================================== -->
+
+      <section
+        class="mb-7 grid grid-cols-3 gap-2 sm:mx-auto sm:max-w-xl sm:gap-4"
+      >
+        <!-- Level -->
+        <div
+          class="score-card rounded-2xl border border-white/[0.08] bg-white/[0.035] p-3 text-center shadow-lg backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/20 hover:bg-white/[0.05] sm:p-4"
+        >
+          <span
+            class="score-label block text-[9px] font-bold uppercase tracking-[2px] text-zinc-500 sm:text-[10px]"
+          >
+            Level
+          </span>
+
+          <span
+            id="level"
+            class="mt-1 block text-2xl font-black text-white sm:text-3xl"
+          >
+            0
+          </span>
+        </div>
+
+        <!-- Time -->
+        <div
+          class="score-card rounded-2xl border border-white/[0.08] bg-white/[0.035] p-3 text-center shadow-lg backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/20 hover:bg-white/[0.05] sm:p-4"
+        >
+          <span
+            class="score-label block text-[9px] font-bold uppercase tracking-[2px] text-zinc-500 sm:text-[10px]"
+          >
+            Time
+          </span>
+
+          <span
+            id="timer"
+            class="mt-1 block text-2xl font-black text-white sm:text-3xl"
+          >
+            0
+          </span>
+        </div>
+
+        <!-- High Score -->
+        <div
+          class="score-card rounded-2xl border border-white/[0.08] bg-white/[0.035] p-3 text-center shadow-lg backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/20 hover:bg-white/[0.05] sm:p-4"
+        >
+          <span
+            class="score-label block text-[9px] font-bold uppercase tracking-[2px] text-zinc-500 sm:text-[10px]"
+          >
+            High Score
+          </span>
+
+          <span
+            id="highest-score"
+            class="mt-1 block text-2xl font-black text-white sm:text-3xl"
+          >
+            0
+          </span>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           GAME CARD
+      ======================================================== -->
+
+      <section
+        class="game-card relative mx-auto flex w-full max-w-4xl flex-col items-center overflow-hidden rounded-[30px] border border-white/[0.10] bg-white/[0.045] p-5 shadow-[0_30px_100px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-8 lg:p-10"
+      >
+        <!-- Card top glow -->
+        <div
+          class="pointer-events-none absolute left-1/2 top-0 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-600/10 blur-[70px]"
+        ></div>
+
+        <!-- Status -->
+        <div
+          class="relative z-[2] mb-8 flex w-full flex-col items-center text-center"
+        >
+          <div
+            class="mx-auto mb-3 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[2px] text-zinc-500"
+          >
+            <span class="h-1.5 w-1.5 rounded-full bg-violet-400"></span>
+            Game Status
+          </div>
+
+          <h2
+            id="game-status"
+            class="text-lg font-bold text-zinc-200 sm:text-xl"
+          >
+            Press Start to Begin
+          </h2>
+        </div>
+
+        <!-- =====================================================
+             SIMON BOARD
+        ====================================================== -->
+
+        <div class="relative z-[2] mx-auto flex w-full justify-center">
+          <!-- Board outer ring -->
+          <div
+            class="relative rounded-[42px] border border-white/[0.09] bg-[#090911]/80 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-5"
+          >
+            <!-- Inner board glow -->
+            <div
+              class="pointer-events-none absolute -inset-px rounded-[39px] bg-gradient-to-br from-violet-500/20 via-transparent to-cyan-500/10 opacity-70"
+            ></div>
+
+            <!-- Simon Buttons -->
+            <div class="btn-container relative grid grid-cols-2 gap-4 sm:gap-5">
+              <!-- RED -->
+              <button
+                class="btn red group relative h-32 w-32 cursor-pointer overflow-hidden rounded-[30px] border border-red-200/20 bg-gradient-to-br from-red-400 via-red-500 to-rose-700 shadow-[inset_0_2px_4px_rgba(255,255,255,0.35),inset_0_-8px_15px_rgba(0,0,0,0.2),0_12px_25px_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-[0_0_30px_rgba(239,68,68,0.4),0_15px_30px_rgba(0,0,0,0.35)] active:scale-[0.94] sm:h-[168px] sm:w-[168px]"
+                id="red"
+                aria-label="Red button"
+              >
+                <span
+                  class="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/20"
+                ></span>
+
+                <span
+                  class="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/20 blur-2xl transition-all duration-300 group-hover:scale-150"
+                ></span>
+              </button>
+
+              <!-- YELLOW -->
+              <button
+                class="btn yellow group relative h-32 w-32 cursor-pointer overflow-hidden rounded-[30px] border border-yellow-100/25 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-600 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),inset_0_-8px_15px_rgba(0,0,0,0.2),0_12px_25px_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-[0_0_30px_rgba(251,191,36,0.4),0_15px_30px_rgba(0,0,0,0.35)] active:scale-[0.94] sm:h-[168px] sm:w-[168px]"
+                id="yellow"
+                aria-label="Yellow button"
+              >
+                <span
+                  class="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/20"
+                ></span>
+
+                <span
+                  class="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/25 blur-2xl transition-all duration-300 group-hover:scale-150"
+                ></span>
+              </button>
+
+              <!-- GREEN -->
+              <button
+                class="btn green group relative h-32 w-32 cursor-pointer overflow-hidden rounded-[30px] border border-emerald-100/25 bg-gradient-to-br from-emerald-300 via-emerald-500 to-emerald-700 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),inset_0_-8px_15px_rgba(0,0,0,0.2),0_12px_25px_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-[0_0_30px_rgba(16,185,129,0.4),0_15px_30px_rgba(0,0,0,0.35)] active:scale-[0.94] sm:h-[168px] sm:w-[168px]"
+                id="green"
+                aria-label="Green button"
+              >
+                <span
+                  class="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/20"
+                ></span>
+
+                <span
+                  class="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/20 blur-2xl transition-all duration-300 group-hover:scale-150"
+                ></span>
+              </button>
+
+              <!-- BLUE -->
+              <button
+                class="btn blue group relative h-32 w-32 cursor-pointer overflow-hidden rounded-[30px] border border-blue-100/25 bg-gradient-to-br from-sky-300 via-blue-500 to-blue-700 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),inset_0_-8px_15px_rgba(0,0,0,0.2),0_12px_25px_rgba(0,0,0,0.4)] transition-all duration-200 hover:-translate-y-1 hover:brightness-110 hover:shadow-[0_0_30px_rgba(59,130,246,0.4),0_15px_30px_rgba(0,0,0,0.35)] active:scale-[0.94] sm:h-[168px] sm:w-[168px]"
+                id="blue"
+                aria-label="Blue button"
+              >
+                <span
+                  class="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/20"
+                ></span>
+
+                <span
+                  class="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full bg-white/20 blur-2xl transition-all duration-300 group-hover:scale-150"
+                ></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+             CONTROLS
+        ====================================================== -->
+
+        <div
+          class="controls relative z-[2] mt-9 flex flex-wrap justify-center gap-2.5"
+        >
+          <button
+            id="start-btn"
+            class="control-btn start-btn rounded-xl border border-violet-300/20 bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-bold text-white shadow-[0_8px_25px_rgba(139,92,246,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(139,92,246,0.4)] active:scale-95"
+          >
+            ▶ Start Game
+          </button>
+
+          <button
+            id="pause-btn"
+            class="control-btn pause-btn rounded-xl border border-amber-400/20 bg-amber-400/10 px-5 py-3 text-sm font-semibold text-amber-300 transition-all duration-300 hover:-translate-y-1 hover:bg-amber-400/15 active:scale-95"
+          >
+            ⏸ Pause
+          </button>
+
+          <button
+            id="restart-btn"
+            class="control-btn restart-btn rounded-xl border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 hover:text-white active:scale-95"
+          >
+            ↻ Restart
+          </button>
+        </div>
+
+        <!-- Sound -->
+        <button
+          id="sound-btn"
+          class="sound-btn relative z-[2] mx-auto mt-4 block rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium text-zinc-400 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+        >
+          🔊 Sound ON
+        </button>
+
+        <p class="keyboard-text mt-4 text-center text-[11px] text-zinc-600">
+          Press any key to start
+        </p>
+      </section>
+
+      <!-- =======================================================
+           INSTRUCTIONS
+      ======================================================== -->
+
+      <section
+        class="instructions mt-7 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-xl sm:p-6"
+      >
+        <div class="mb-5 text-center">
+          <p
+            class="mb-1 text-[10px] font-bold uppercase tracking-[3px] text-violet-400"
+          >
+            HOW IT WORKS
+          </p>
+
+          <h3 class="text-lg font-bold text-white">Master the Pattern</h3>
+        </div>
+
+        <div class="instruction-items grid gap-3 sm:grid-cols-3">
+          <!-- WATCH -->
+          <div
+            class="instruction group flex min-h-[155px] flex-col items-center justify-center rounded-2xl border border-white/[0.07] bg-white/[0.035] p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/20 hover:bg-white/[0.055]"
+          >
+            <div
+              class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 text-sm font-bold text-violet-300"
+            >
+              1
+            </div>
+
+            <p class="text-sm font-semibold text-zinc-200">WATCH</p>
+
+            <p class="mt-1 text-xs leading-5 text-zinc-500">
+              Remember the highlighted sequence.
+            </p>
+          </div>
+
+          <!-- REMEMBER -->
+          <div
+            class="instruction group flex min-h-[155px] flex-col items-center justify-center rounded-2xl border border-white/[0.07] bg-white/[0.035] p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/20 hover:bg-white/[0.055]"
+          >
+            <div
+              class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-500/10 text-sm font-bold text-cyan-300"
+            >
+              2
+            </div>
+
+            <p class="text-sm font-semibold text-zinc-200">RECALL</p>
+
+            <p class="mt-1 text-xs leading-5 text-zinc-500">
+              Follow the same pattern.
+            </p>
+          </div>
+
+          <!-- REPEAT -->
+          <div
+            class="instruction group flex min-h-[155px] flex-col items-center justify-center rounded-2xl border border-white/[0.07] bg-white/[0.035] p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-fuchsia-400/20 hover:bg-white/[0.055]"
+          >
+            <div
+              class="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-fuchsia-500/10 text-sm font-bold text-fuchsia-300"
+            >
+              3
+            </div>
+
+            <p class="text-sm font-semibold text-zinc-200">MASTER</p>
+
+            <p class="mt-1 text-xs leading-5 text-zinc-500">
+              Beat your previous score.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+           ACHIEVEMENTS
+      ======================================================== -->
+
+      <section
+        class="achievements mt-7 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-xl sm:p-6"
+      >
+        <div class="mb-5 text-center">
+          <p
+            class="mb-1 text-[10px] font-bold uppercase tracking-[3px] text-amber-400"
+          >
+            Milestones
+          </p>
+
+          <h3 class="text-lg font-bold text-white">🏆 Achievements</h3>
+        </div>
+
+        <div class="achievement-grid grid gap-3 md:grid-cols-3">
+          <!-- Achievement 5 -->
+          <div
+            class="achievement locked flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 text-left transition-all duration-300"
+            id="achievement-5"
+          >
+            <span
+              class="achievement-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-400/10 text-2xl"
+            >
+              🎯
+            </span>
+
+            <div>
+              <h4 class="text-sm font-bold text-zinc-200">Getting Started</h4>
+
+              <p class="mt-1 text-xs text-zinc-500">Reach Level 5</p>
+            </div>
+          </div>
+
+          <!-- Achievement 10 -->
+          <div
+            class="achievement locked flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 text-left transition-all duration-300"
+            id="achievement-10"
+          >
+            <span
+              class="achievement-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-400/10 text-2xl"
+            >
+              🧠
+            </span>
+
+            <div>
+              <h4 class="text-sm font-bold text-zinc-200">Memory Master</h4>
+
+              <p class="mt-1 text-xs text-zinc-500">Reach Level 10</p>
+            </div>
+          </div>
+
+          <!-- Achievement 20 -->
+          <div
+            class="achievement locked flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4 text-left transition-all duration-300"
+            id="achievement-20"
+          >
+            <span
+              class="achievement-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-400/10 text-2xl"
+            >
+              👑
+            </span>
+
+            <div>
+              <h4 class="text-sm font-bold text-zinc-200">Simon Legend</h4>
+
+              <p class="mt-1 text-xs text-zinc-500">Reach Level 20</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================
+         WATERMARK
+    ========================================================== -->
+
+    <footer
+      class="relative z-10 mt-20 border-t border-white/[0.06] bg-black/25 px-6 py-9 backdrop-blur-xl"
+    >
+      <div
+        class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 sm:flex-row"
+      >
+        <!-- Left -->
+        <div class="text-center sm:text-left">
+          <p class="text-xs font-medium text-white/50">
+            © 2026 Simon Says Game
+          </p>
+
+          <p class="mt-1 text-[10px] text-white/25">All rights reserved.</p>
+        </div>
+
+        <!-- Center -->
+        <div class="flex items-center gap-2 text-[11px] text-white/35">
+          <span
+            class="h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_12px_#a855f7] animate-pulse"
+          ></span>
+
+          <span class="text-white/60">Designed with</span>
+
+          <span class="text-violet-400">♥</span>
+
+          <span class="text-white/60">by</span>
+
+          <strong class="font-semibold text-white/70"> Tejasvi Rajput </strong>
+        </div>
+
+        <!-- Right -->
+        <div class="text-[10px] tracking-wider text-white/60 uppercase">
+          Memory • Focus • Reflex
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
     <script src="app.js"></script>
   </body>
 </html>
